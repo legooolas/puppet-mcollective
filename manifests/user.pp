@@ -1,11 +1,13 @@
 # Define - mcollective::user
 define mcollective::user(
-  $username = $name,
-  $callerid = $name,
-  $group    = $name,
-  $homedir = "/home/${name}",
-  $certificate = undef,
-  $private_key = undef,
+  $username            = $name,
+  $callerid            = $name,
+  $group               = $name,
+  $homedir             = "/home/${name}",
+  $certificate         = undef,
+  $certificate_content = undef,
+  $private_key         = undef,
+  $private_key_content = undef,
 
   # duplication of $ssl_ca_cert, $ssl_server_public, $connector,
   # $middleware_ssl, $middleware_hosts, and $securityprovider parameters to
@@ -54,7 +56,14 @@ define mcollective::user(
 
     $private_path = "${homedir}/.mcollective.d/credentials/private_keys/${callerid}.pem"
     file { $private_path:
-      source => $private_key,
+      source => $private_key_content ? {
+        undef   => $private_key,
+        default => undef,
+      },
+      content => $private_key_content ? {
+        undef   => undef,
+        default => $private_key_content,
+      },
       owner  => $username,
       group  => $group,
       mode   => '0400',
@@ -63,7 +72,14 @@ define mcollective::user(
 
   if $securityprovider == 'ssl' {
     file { "${homedir}/.mcollective.d/credentials/certs/${callerid}.pem":
-      source => $certificate,
+      source => $certificate_content ? {
+        undef   => $certificate,
+        default => undef,
+      },
+      content => $certificate_content ? {
+        undef   => undef,
+        default => $certificate_content,
+      },
       owner  => $username,
       group  => $group,
       mode   => '0444',
