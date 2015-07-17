@@ -57,11 +57,13 @@ class mcollective (
   $client_package      = 'mcollective-client',
 
   # ssl certs
-  $ssl_ca_cert          = undef,
-  $ssl_server_public    = undef,
-  $ssl_server_private   = undef,
-  $ssl_client_certs     = 'puppet:///modules/mcollective/empty',
-  $ssl_client_certs_dir = undef, # default dependent on $confdir
+  $ssl_ca_cert                = undef,
+  $ssl_server_public          = undef,
+  $ssl_server_public_content  = undef,
+  $ssl_server_private         = undef,
+  $ssl_server_private_content = undef,
+  $ssl_client_certs           = 'puppet:///modules/mcollective/empty',
+  $ssl_client_certs_dir       = undef, # default dependent on $confdir
 ) inherits mcollective::defaults {
 
   # Because the correct default value for several parameters is based on another

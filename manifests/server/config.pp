@@ -44,17 +44,19 @@ class mcollective::server::config {
     }
 
     file { "${mcollective::confdir}/server_public.pem":
-      owner  => 'root',
-      group  => '0',
-      mode   => '0444',
-      source => $mcollective::ssl_server_public,
+      owner   => 'root',
+      group   => '0',
+      mode    => '0444',
+      content => $mcollective::ssl_server_public_content,
+      source  => $mcollective::ssl_server_public,
     }
 
     file { "${mcollective::confdir}/server_private.pem":
-      owner  => 'root',
-      group  => '0',
-      mode   => '0400',
-      source => $mcollective::ssl_server_private,
+      owner   => 'root',
+      group   => '0',
+      mode    => '0400',
+      content => $mcollective::ssl_server_private_content,
+      source  => $mcollective::ssl_server_private,
     }
   }
 

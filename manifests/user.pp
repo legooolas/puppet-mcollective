@@ -12,12 +12,13 @@ define mcollective::user(
   # duplication of $ssl_ca_cert, $ssl_server_public, $connector,
   # $middleware_ssl, $middleware_hosts, and $securityprovider parameters to
   # allow for spec testing.  These are otherwise considered private.
-  $ssl_ca_cert = $mcollective::ssl_ca_cert,
-  $ssl_server_public = $mcollective::ssl_server_public,
-  $middleware_hosts = $mcollective::middleware_hosts,
-  $middleware_ssl = $mcollective::middleware_ssl,
-  $securityprovider = $mcollective::securityprovider,
-  $connector = $mcollective::connector,
+  $ssl_ca_cert               = $mcollective::ssl_ca_cert,
+  $ssl_server_public         = $mcollective::ssl_server_public,
+  $ssl_server_public_content = $mcollective::ssl_server_public_content,
+  $middleware_hosts          = $mcollective::middleware_hosts,
+  $middleware_ssl            = $mcollective::middleware_ssl,
+  $securityprovider          = $mcollective::securityprovider,
+  $connector                 = $mcollective::connector,
 ) {
   file { [
     "${homedir}/.mcollective.d",
@@ -48,10 +49,13 @@ define mcollective::user(
     }
 
     file { "${homedir}/.mcollective.d/credentials/certs/server_public.pem":
-      source => $ssl_server_public,
-      owner  => $username,
-      group  => $group,
-      mode   => '0444',
+      # Only one of these two will be used -- whichever is defined:
+      content => $ssl_server_public_content,
+      source  => $ssl_server_public,
+
+      owner   => $username,
+      group   => $group,
+      mode    => '0444',
     }
 
     $private_path = "${homedir}/.mcollective.d/credentials/private_keys/${callerid}.pem"
