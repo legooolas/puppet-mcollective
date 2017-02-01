@@ -8,12 +8,12 @@ class mcollective::server::config {
     owner    => 'root',
     group    => '0',
     mode     => '0400',
-    path     => $mcollective::server_config_file_real,
+    path     => $::mcollective::server_config_file_real,
     template => 'mcollective/settings.cfg.erb',
   }
 
   mcollective::server::setting { 'classesfile':
-    value => $mcollective::classesfile,
+    value => $::mcollective::classesfile,
   }
 
   mcollective::server::setting { 'daemonize':
@@ -21,21 +21,21 @@ class mcollective::server::config {
   }
 
   mcollective::server::setting { 'logfile':
-    value => $mcollective::server_logfile,
+    value => $::mcollective::server_logfile,
   }
 
   mcollective::server::setting { 'loglevel':
-    value => $mcollective::server_loglevel,
+    value => $::mcollective::server_loglevel,
   }
 
-  file { "${mcollective::confdir}/policies":
+  file { "${::mcollective::confdir}/policies":
     ensure => 'directory',
     owner  => 'root',
     group  => '0',
     mode   => '0700',
   }
 
-  file { $mcollective::ssldir:
+  file { $::mcollective::ssldir:
     ensure => 'directory',
     owner  => 'root',
     group  => '0',
@@ -73,7 +73,7 @@ class mcollective::server::config {
       group  => '0',
       mode   => '0444',
       source => $::mcollective::ssl_server_public,
-      content => $mcollective::ssl_server_public_content,
+      content => $::mcollective::ssl_server_public_content,
     }
 
     file { $::mcollective::ssl_server_private_path:
@@ -81,18 +81,18 @@ class mcollective::server::config {
       group  => '0',
       mode   => '0400',
       source => $::mcollective::ssl_server_private,
-      content => $mcollective::ssl_server_private_content,
+      content => $::mcollective::ssl_server_private_content,
     }
 
   }
 
   mcollective::soft_include { [
-    "::mcollective::server::config::connector::${mcollective::connector}",
-    "::mcollective::server::config::securityprovider::${mcollective::securityprovider}",
-    "::mcollective::server::config::factsource::${mcollective::factsource}",
-    "::mcollective::server::config::registration::${mcollective::registration}",
-    "::mcollective::server::config::rpcauditprovider::${mcollective::rpcauditprovider}",
-    "::mcollective::server::config::rpcauthprovider::${mcollective::rpcauthprovider}",
+    "::mcollective::server::config::connector::${::mcollective::connector}",
+    "::mcollective::server::config::securityprovider::${::mcollective::securityprovider}",
+    "::mcollective::server::config::factsource::${::mcollective::factsource}",
+    "::mcollective::server::config::registration::${::mcollective::registration}",
+    "::mcollective::server::config::rpcauditprovider::${::mcollective::rpcauditprovider}",
+    "::mcollective::server::config::rpcauthprovider::${::mcollective::rpcauthprovider}",
   ]:
     start => Anchor['mcollective::server::config::begin'],
     end   => Anchor['mcollective::server::config::end'],
