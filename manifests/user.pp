@@ -97,8 +97,9 @@ define mcollective::user(
     file { "${homedir_real}/.mcollective.d/credentials/certs/server_public.pem":
       ensure => 'file',
       # Only one of these two will be used -- whichever is defined:
+      # TODO : Fix pick_default usage in main mcollective class to allow this:
+      #source => $_ssl_server_public,
       content => $_ssl_server_public_content,
-      source => $_ssl_server_public,
       owner  => $username,
       group  => $group,
       mode   => '0444',
@@ -107,8 +108,9 @@ define mcollective::user(
     file { "${homedir_real}/.mcollective.d/credentials/private_keys/server_private.pem":
       ensure => 'file',
       # Only one of these two will be used -- whichever is defined:
+      # TODO : Fix pick_default usage in main mcollective class to allow this:
+      #source => $_ssl_server_private,
       content => $_ssl_server_private_content,
-      source => $_ssl_server_private,
       owner  => $username,
       group  => $group,
       mode   => '0400',
@@ -140,8 +142,9 @@ define mcollective::user(
       file { $private_path:
         ensure => 'file',
         # Only one of these two will be used -- whichever is defined:
+        # TODO : Fix pick_default usage in main mcollective class to allow this:
+        #source =>  $_ssl_server_private,
         content => $_ssl_server_private_content,
-        source =>  $_ssl_server_private,
         owner  =>  $username,
         group  =>  $group,
         mode   =>  '0400',
