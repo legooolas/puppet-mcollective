@@ -1,4 +1,11 @@
-# mcollective
+# MCollective module for Puppet
+
+[![Build Status](https://travis-ci.org/voxpupuli/puppet-mcollective.png?branch=master)](https://travis-ci.org/voxpupuli/puppet-mcollective)
+[![Code Coverage](https://coveralls.io/repos/github/voxpupuli/puppet-mcollective/badge.svg?branch=master)](https://coveralls.io/github/voxpupuli/puppet-mcollective)
+[![Puppet Forge](https://img.shields.io/puppetforge/v/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
+[![Puppet Forge - downloads](https://img.shields.io/puppetforge/dt/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
+[![Puppet Forge - endorsement](https://img.shields.io/puppetforge/e/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
+[![Puppet Forge - scores](https://img.shields.io/puppetforge/f/puppet/mcollective.svg)](https://forge.puppetlabs.com/puppet/mcollective)
 
 #### Table of Contents
 
@@ -15,7 +22,7 @@
 ## Overview
 
 The mcollective module installs, configures, and manages the mcollective
-agents, clients, and middleware of an mcollective cluster.
+agents, and clients of an MCollective cluster.
 
 ## Module Description
 
@@ -38,7 +45,6 @@ If it helps to map these to puppet concepts you loosely have:
 * MCollective Server -> Puppet Agent
 * MCollective Client -> no direct equivalent
 
-
 ## Setup
 
 ### What the mcollective module affects
@@ -54,11 +60,6 @@ On a client
 * mcollective-client package
 * mcollective client configuration file
 * optionally user configuration files (~/.mcollective and ~/.mcollective.d)
-
-On a middleware host
-
-* broker installation
-* broker configuration
 
 ### Beginning with mcollective
 
@@ -83,10 +84,7 @@ mcollective class, with secondary configuration managed by the defined types
 
 ```puppet
 node 'broker1.example.com' {
-  class { '::mcollective':
-    middleware       => true,
-    middleware_hosts => [ 'broker1.example.com' ],
-  }
+  include activemq
 }
 
 node 'server1.example.com' {
@@ -108,7 +106,6 @@ passwords, and the psk securityprovider.  This is against the recommendataion
 of the standard deploy guide but does save you from having to deal with ssl
 certificates to begin with.
 
-
 ### I'd like to secure the transport channel and authenticate users, how do I do that?
 
 Gather some credentials for the server and users.  You'll need the ca
@@ -118,30 +115,25 @@ to allow.
 See the [standard deploy guide](http://docs.puppetlabs.com/mcollective/deploy/standard.html#step-1-create-and-collect-credentials)
 for more information about how to generate these.
 
-
 ```puppet
 node 'broker1.example.com' {
-  class { '::mcollective':
-    middleware         => true,
-    middleware_hosts   => [ 'broker1.example.com' ],
-    middleware_ssl     => true,
-    securityprovider   => 'ssl',
-    ssl_client_certs   => 'puppet:///modules/site_mcollective/client_certs',
-    ssl_ca_cert        => 'puppet:///modules/site_mcollective/certs/ca.pem',
-    ssl_server_public  => 'puppet:///modules/site_mcollective/certs/server.pem',
-    ssl_server_private => 'puppet:///modules/site_mcollective/private_keys/server.pem',
-  }
+  # Please see
+  # https://github.com/voxpupuli/puppet-mcollective/blob/master/examples/ssl_example/mco_profile/manifests/middleware/activemq.pp
+  # for this as setting up activemq with a truststore can be quite complex.
 }
 
 node 'server1.example.com' {
   class { '::mcollective':
-    middleware_hosts   => [ 'broker1.example.com' ],
-    middleware_ssl     => true,
-    securityprovider   => 'ssl',
-    ssl_client_certs   => 'puppet:///modules/site_mcollective/client_certs',
-    ssl_ca_cert        => 'puppet:///modules/site_mcollective/certs/ca.pem',
-    ssl_server_public  => 'puppet:///modules/site_mcollective/certs/server.pem',
-    ssl_server_private => 'puppet:///modules/site_mcollective/private_keys/server.pem',
+    middleware_hosts    => [ 'broker1.example.com' ],
+    middleware_ssl      => true,
+    middleware_ssl_cert => "/var/lib/puppet/ssl/certs/${::clientcert}.pem",
+    middleware_ssl_key  => "/var/lib/puppet/ssl/private_keys/${::clientcert}.pem",
+    middleware_ssl_ca   => "/var/lib/puppet/ssl/certs/ca.pem",
+    securityprovider    => 'ssl',
+    ssl_client_certs    => 'puppet:///modules/site_mcollective/client_certs',
+    ssl_ca_cert         => 'puppet:///modules/site_mcollective/certs/ca.pem',
+    ssl_server_public   => 'puppet:///modules/site_mcollective/certs/server.pem',
+    ssl_server_private  => 'puppet:///modules/site_mcollective/private_keys/server.pem',
   }
 
   mcollective::actionpolicy { 'nrpe':
@@ -156,14 +148,17 @@ node 'server1.example.com' {
 
 node 'control.example.com' {
   class { '::mcollective':
-    client             => true,
-    middleware_hosts   => [ 'broker1.example.com' ],
-    middleware_ssl     => true,
-    securityprovider   => 'ssl',
-    ssl_client_certs   => 'puppet:///modules/site_mcollective/client_certs',
-    ssl_ca_cert        => 'puppet:///modules/site_mcollective/certs/ca.pem',
-    ssl_server_public  => 'puppet:///modules/site_mcollective/certs/server.pem',
-    ssl_server_private => 'puppet:///modules/site_mcollective/private_keys/server.pem',
+    client              => true,
+    middleware_hosts    => [ 'broker1.example.com' ],
+    middleware_ssl      => true,
+    middleware_ssl_cert => "/var/lib/puppet/ssl/certs/${::clientcert}.pem",
+    middleware_ssl_key  => "/var/lib/puppet/ssl/private_keys/${::clientcert}.pem",
+    middleware_ssl_ca   => "/var/lib/puppet/ssl/certs/ca.pem",
+    securityprovider    => 'ssl',
+    ssl_client_certs    => 'puppet:///modules/site_mcollective/client_certs',
+    ssl_ca_cert         => 'puppet:///modules/site_mcollective/certs/ca.pem',
+    ssl_server_public   => 'puppet:///modules/site_mcollective/certs/server.pem',
+    ssl_server_private  => 'puppet:///modules/site_mcollective/private_keys/server.pem',
   }
 
   mcollective::user { 'vagrant':
@@ -172,6 +167,28 @@ node 'control.example.com' {
   }
 }
 ```
+
+### I'd like to secure the transport channel and authenticate users with just their private key, how do I do that?
+
+The Mcollective standard deployment guide uses the 'ssl' securityprovider to handle
+authentication.  If you're interested in performing the authentication without
+creating SSL certificates for each user, one alternative is to use the 'sshkey'
+securityprovider.  As far as the transport channel encryption goes, it's no different
+than the above example's use of 'middleware_ssl*' parameters.
+
+Sshkey adds additional flexibility with regards to deployment as it currently supports
+both a static and a dynamic key management philosophy.  You can seperate sshkey from
+your normal system authentication's backend (known\_hosts / authorized\_keys) and
+permit it to send and record its key data for you.  If you do this, you should strongly
+consider using an authorization plugin with mcollective. Alternatively, you can use
+puppet to enforce the available set of key data to use with requests and responses.
+Because this could reuse an existing user's ssh private key, it could work along-side
+your existing user management module.
+
+The use of sshkey is optional.  For further information, you can review a sample
+deployment in the /examples folder, review the [sshkey module documentation](https://github.com/puppetlabs/mcollective-sshkey-security),
+and review the [sshkeyauth rubygem documentation](https://github.com/jordansissel/ruby-sshkeyauth)
+(helpful for debugging errors).
 
 ### The `::mcollective::` class
 
@@ -207,6 +224,18 @@ client packages when installing the server and client components.
 
 String: defaults to 'present'.  What version of packages to `ensure` when
 `mcollective::manage_packages` is true.
+
+##### `client_package`
+
+String: defaults to 'mcollective-client'. The name of the package to install for
+the client part. In the case that there is only one package package handling both,
+client and server, give the same name for 'client_package' and 'server_package'.
+
+##### `server_package`
+
+String: defaults to 'mcollective'. The name of the package to install for
+the server. In the case that there is only one package package handling both,
+client and server, give the same name for 'client_package' and 'server_package'.
 
 ##### `ruby_stomp_ensure`
 
@@ -245,19 +274,21 @@ the pre-shared key to secure the collective with.
 String: defaults to 'yaml'.  Name of the factsource plugin to use on the
 server.
 
+##### `fact_cron_splay`
+Boolean: defaults to false. Spread the cron tasks so that not all the nodes
+runs the facter cronjob at the exact same time.
+
 ##### `yaml_fact_path`
 
 String: defaults to '/etc/mcollective/facts.yaml'.  Name of the file the
 'yaml' factsource plugin should load facts from.
 
-##### `excluded_facts`
-Array: defaults to []. List of facts to exclude from facts.yaml when
-`factsource` is 'yaml'. This is useful for preventing dynamic facts (that
-change on each Puppet run) from ending up in facts.yaml, which would trigger
-restarts of Mcollective. A default list of facts to ignore is managed
-internally: `uptime.*`, `rubysitedir`, `_timestamp`, `memoryfree.*`,
-`swapfree.*` and `last_run`. Note that the fact names can be Ruby regular
-expressions.
+##### `ruby_interpreter`
+
+String: defaults to '/usr/bin/env ruby' for non PE installations, and to
+'/opt/puppet/bin/ruby' for PE installations. With `factsource` 'yaml', a ruby
+script is installed as cron job, which needs to find the ruby interpreter.
+This parameter allows overriding the default interpreter.
 
 ##### `classesfile`
 
@@ -273,6 +304,11 @@ the server.
 
 String: defaults to 'logfile'.  Name of the RPC Audit Provider to use on the
 server.
+
+##### `rpcauditlogfile`
+
+String: defaults to '/var/log/mcollective-audit.log'.  Name of the audit
+logfile.
 
 ##### `registration`
 
@@ -309,8 +345,8 @@ middleware.
 
 ##### `middleware_port`
 
-String: defaults to '61613'.  Port number to use when connecting to the
-middleware over an unencrypted connection.
+String: defaults to '61613' (for `activemq`).  Port number to use when
+connecting to the middleware over an unencrypted connection.
 
 ##### `middleware_ssl_port`
 
@@ -335,7 +371,7 @@ admin user.
 
 ##### `server_config_file`
 
-String: default is '/etc/mcollective/server.cfg'.  Path to the server
+String: default is '$confdir/server.cfg'.  Path to the server
 configuration file.
 
 ##### `server_logfile`
@@ -349,12 +385,12 @@ String: defaults to 'info'.  Level the mcollective server should log at.
 
 ##### `server_daemonize`
 
-String: defaults to '1'.  Should the mcollective server daemonize when
+Boolean: defaults to true.  Should the mcollective server daemonize when
 started.
 
 ##### `client_config_file`
 
-String: defaults to '/etc/mcollective/client.cfg'.  Path to the client
+String: defaults to '$confdir/client.cfg'.  Path to the client
 configuration file.
 
 ##### `client_logger_type`
@@ -364,7 +400,6 @@ String: defaults to 'console'.  What type of logger the client should use.
 ##### `client_loglevel`
 
 String: defaults to 'warn'.  Level the mcollective client should log at.
-
 
 ##### `ssl_ca_cert`
 
@@ -386,6 +421,36 @@ the server keypair.
 String: defaults to 'puppet:///modules/mcollective/empty'.  A file source that
 contains a directory of user certificates which are used by the ssl security
 provider in authenticating user requests.
+
+##### `sshkey_server_learn_public_keys`
+
+Boolean: defaults to false.  Allow writing sshkey public keys to
+`sshkey_server_publickey_dir`.
+
+##### `sshkey_server_overwrite_stored_keys`
+
+Boolean: defaults to false.  Overwrite learned keys.
+
+##### `sshkey_server_publickey_dir`
+
+String: defaults to `${confdir}/sshkey_pubdir`.  Directory to store
+received keys
+
+##### `sshkey_server_private_key`
+
+String: defaults to '/etc/ssh/ssh\_host\_rsa\_key'.  The private key used to
+sign replies with.
+
+##### `sshkey_server_authorized_keys`
+
+String: defaults to undefined.  The authorized_key file to use.  Undefined
+is interpreted by sshkey to mean the caller's authorized key file.
+
+##### `sshkey_server_send_key`
+
+String: defaults to undefined.  Specifies the public key
+sent back with the response for validation. You probably want
+'/etc/ssh/ssh\_host\_rsa\_key.pub'.
 
 ### `mcollective::user` defined type
 
@@ -410,13 +475,58 @@ install for.
 ##### `certificate`
 
 String: defaults to undef.  A file source for the certificate of the user.
-Used by the 'ssl' securityprovider to set the identity of the user.
+Used by the 'ssl' securityprovider to set the identity of the user. This is
+mutually exclusive with `certificate_content`.
+
+##### `certificate_content`
+
+String: defaults to undef.  The file content for the certificate of the user.
+Used by the 'ssl' securityprovider to set the identity of the user. This is
+mutually exclusive with `certificate`.
 
 ##### `private_key`
 
 String: defaults to undef.  A file source for the private key of the user.
-Used when `mcollective::middleware_ssl` is true to connect to the middleware
-and by the 'ssl' securityprovider to sign messages as from this user.
+Used by the 'ssl' & 'sshkey' securityprovider to sign messages as from this user.
+When not supplied to sshkey, this is interpreted to use the user's ssh-agent.
+This is mutually exclusive with `private_key_content`.
+
+##### `private_key_content`
+
+String: defaults to undef.  The file content for the private key of the user.
+Used by the 'ssl' & 'sshkey' securityprovider to sign messages as from this user.
+This is mutually exclusive with `private_key`.
+
+##### `sshkey_learn_public_keys`
+
+Boolean: defaults to false.  Allow writing sshkey public keys to
+`sshkey_client_publickey_dir`.
+
+##### `sshkey_overwrite_stored_keys`
+
+Boolean: defaults to false.  Overwrite learned keys.
+
+##### `sshkey_publickey_dir`
+
+String: defaults to `${homedir}/.mcollective.d/public_keys`.  Directory to store
+received keys.
+
+##### `sshkey_enable_private_key`
+
+Boolean: defaults to false.  Enable manual specification of the private key to
+sign requests with.  False is interpreted by sshkey to use the
+user's ssh-agent.
+
+##### `sshkey_known_hosts`
+
+String: defaults to '${homedir}/${callerid}/.ssh/known\_hosts'. The known\_hosts
+file to use.  This is mutually exclusive with `sshkey_publickey_dir` and is disabled
+by `sshkey_learn_public_keys`.
+
+##### `sshkey_enable_send_key`
+
+Boolean: defaults to false.  Enable sending the user public key inside the
+request.
 
 ### `mcollective::plugin` defined type
 
@@ -500,7 +610,8 @@ String: defaults to 'deny'.  The default actionpolicy to apply to the agent.
 ### `mcollective::actionpolicy::rule` defined type
 
 `mcollective::actionpolicy::rule` represents a single actionpolicy policy
-entry.
+entry. See the actionpolicy plugin [Policy File Format](https://github.com/puppetlabs/mcollective-actionpolicy-auth#policy-file-format)
+for specific restrictions on the values of these fields.
 
 #### Parameters
 
@@ -526,9 +637,12 @@ String: defaults to '*'.  What callerids should match this rule.
 
 String: defaults to '*'.  What actions should match this rule.
 
-##### `facts`
+##### `fact_filter`
 
-String: defaults to '*'.  What facts should match this rule.
+String: defaults to '*'.  What facts should match this rule. This can be either
+'*', a space-separated list of ``fact=value`` pairs (which match if every listed
+fact matches), or any valid [compound filter string](http://docs.puppetlabs.com/mcollective/reference/basic/basic_cli_usage.html#complex-compound-or-select-queries).
+This matches the "facts" field of the policy file lines.
 
 ##### `classes`
 
@@ -612,6 +726,22 @@ String: no default.  The value to set.
 
 String: default '70'.  The order in which to merge this setting.
 
+### `mcollective::server::config::factsource::yaml` private class
+
+`mcollective::server::config::factsource::yaml` is the class that implements
+cron-based fact generation and configures MCollective to use it. It is a private
+class and so may not be declared directly, but rather is invoked when the
+`mcollective` class is declared with the `factsource` parameter set to `yaml`
+(the default). Although `mcollective::server::config::factsource::yaml` is private
+it does have one parameter which can be tuned using data bindings (e.g. Hiera).
+
+#### Parameters
+
+##### `path`
+
+String: default $::path. What PATH environment variable to use when
+refresh-mcollective-metadata is invoked by cron.
+
 ## Reference
 
 ### Configuration merging
@@ -676,10 +806,10 @@ Testing on other platforms has been light and cannot be guaranteed.
 
 ## Development
 
-Puppet Labs modules on the Puppet Forge are open projects, and community
-contributions are essential for keeping them great. We can’t access the
-huge number of platforms and myriad of hardware, software, and deployment
-configurations that Puppet is intended to serve.
+Puppet Community modules on are open projects, and community contributions are
+essential for keeping them great. We can’t access the huge number of platforms
+and myriad of hardware, software, and deployment configurations that Puppet is
+intended to serve.
 
 We want to keep it as easy as possible to contribute changes so that our
 modules work in your environment. There are a few guidelines that we need
@@ -687,5 +817,5 @@ contributors to follow so that we can have a chance of keeping on top of things.
 
 You can read the complete module contribution guide [on the Puppet Labs wiki.](http://projects.puppetlabs.com/projects/module-site/wiki/Module_contributing)
 
-Current build status is: [![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-mcollective.png)](https://travis-ci.org/puppetlabs/puppetlabs-mcollective)
+Current build status is: [![Build Status](https://api.travis-ci.org/voxpupuli/puppet-mcollective.png)](https://travis-ci.org/voxpupuli/puppet-mcollective)
 

@@ -6,6 +6,7 @@ define mcollective::user::connector(
   $order,
   $connector,
   $middleware_ssl,
+  $ssl_ciphers,
 ) {
   $i = regsubst($title, "^${username}_", '')
 
@@ -21,14 +22,23 @@ define mcollective::user::connector(
       setting  => "plugin.${connector}.pool.${i}.ssl.cert",
       username => $username,
       order    => $order,
-      value    => "${homedir}/.mcollective.d/credentials/certs/${callerid}.pem",
+      value    => "${homedir}/.mcollective.d/credentials/certs/server_public.pem",
     }
 
     mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.key":
       setting  => "plugin.${connector}.pool.${i}.ssl.key",
       username => $username,
       order    => $order,
-      value    => "${homedir}/.mcollective.d/credentials/private_keys/${callerid}.pem",
+      value    => "${homedir}/.mcollective.d/credentials/private_keys/server_private.pem",
+    }
+
+    if ! empty( $ssl_ciphers ) {
+      mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.ciphers":
+        setting  => "plugin.${connector}.pool.${i}.ssl.ciphers",
+        username => $username,
+        order    => $order,
+        value    => $ssl_ciphers,
+      }
     }
   }
 }
