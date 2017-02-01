@@ -23,8 +23,8 @@ define mcollective::user(
   $ssl_ca_cert       = undef,
   $ssl_server_public = undef,
   $ssl_server_public_content = undef,
-  $ssl_server_private= undef,
-  $ssl_server_private_content = undef,
+  #$ssl_server_private= undef,
+  #$ssl_server_private_content = undef,
   $middleware_hosts  = undef,
   $middleware_ssl    = undef,
   $securityprovider  = undef,
@@ -38,8 +38,8 @@ define mcollective::user(
   $_ssl_ca_cert       = pick_default($ssl_ca_cert, $::mcollective::ssl_ca_cert)
   $_ssl_server_public = pick_default($ssl_server_public, $::mcollective::ssl_server_public)
   $_ssl_server_public_content = pick_default($ssl_server_public_content, $::mcollective::ssl_server_public_content)
-  $_ssl_server_private= pick_default($ssl_server_private, $::mcollective::ssl_server_private)
-  $_ssl_server_private_content = pick_default($ssl_server_private_content , $::mcollective::ssl_server_private_content)
+  #$_ssl_server_private= pick_default($ssl_server_private, $::mcollective::ssl_server_private)
+  #$_ssl_server_private_content = pick_default($ssl_server_private_content , $::mcollective::ssl_server_private_content)
   $_middleware_hosts  = pick_default($middleware_hosts, $::mcollective::middleware_hosts)
   $_securityprovider  = pick_default($securityprovider, $::mcollective::securityprovider)
   $_connector         = pick_default($connector, $::mcollective::connector)
@@ -55,9 +55,9 @@ define mcollective::user(
   if $ssl_server_public and $ssl_server_public_content {
     fail("Both a source and content cannot be defined for ${username} ssl server public key!")
   }
-  if $ssl_server_private and $ssl_server_private_content {
-    fail("Both a source and content cannot be defined for ${username} ssl server private key!")
-  }
+  #if $ssl_server_private and $ssl_server_private_content {
+  #  fail("Both a source and content cannot be defined for ${username} ssl server private key!")
+  #}
 
   # Variable interpolation in class parameters can be goofy (PUP-1080)
   $homedir_real = pick($homedir,"/home/${username}")
