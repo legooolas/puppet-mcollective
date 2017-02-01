@@ -22,14 +22,14 @@ define mcollective::user::connector(
       setting  => "plugin.${connector}.pool.${i}.ssl.cert",
       username => $username,
       order    => $order,
-      value    => "${homedir}/.mcollective.d/credentials/certs/server_public.pem",
+      value    => "${homedir}/.mcollective.d/credentials/certs/${callerid}.pem",
     }
 
     mcollective::user::setting { "${username} plugin.${connector}.pool.${i}.ssl.key":
       setting  => "plugin.${connector}.pool.${i}.ssl.key",
       username => $username,
       order    => $order,
-      value    => "${homedir}/.mcollective.d/credentials/private_keys/server_private.pem",
+      value    => "${homedir}/.mcollective.d/credentials/private_keys/${callerid}.pem",
     }
 
     if ! empty( $ssl_ciphers ) {
