@@ -105,12 +105,12 @@ define mcollective::user(
       mode   => '0444',
     }
 
-    file { "${homedir_real}/.mcollective.d/credentials/private_keys/server_private.pem":
+    file { "${homedir_real}/.mcollective.d/credentials/private_keys/${callerid}.pem":
       ensure => 'file',
       # Only one of these two will be used -- whichever is defined:
       # TODO : Fix pick_default usage in main mcollective class to allow this:
-      #source => $_ssl_server_private,
-      content => $_ssl_server_private_content,
+      #source => $private_key,
+      content => $private_key_content,
       owner  => $username,
       group  => $group,
       mode   => '0400',
