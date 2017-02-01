@@ -55,14 +55,18 @@ class mcollective::server::config {
       owner  => 'root',
       group  => '0',
       mode   => '0400',
+      # Only one of these will be used:
       source => $::mcollective::middleware_ssl_key_real,
+      content=> $::mcollective::middleware_ssl_key_real_content,
     }
 
     file { $::mcollective::middleware_ssl_cert_path:
       owner  => 'root',
       group  => '0',
       mode   => '0444',
+      # Only one of these will be used:
       source => $::mcollective::middleware_ssl_cert_real,
+      content=> $::mcollective::middleware_ssl_cert_real_content,
     }
   }
 

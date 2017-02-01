@@ -110,7 +110,9 @@ class mcollective (
 
   $middleware_ssl_ca_real   = pick_default($middleware_ssl_ca, $ssl_ca_cert)
   $middleware_ssl_cert_real = pick_default($middleware_ssl_cert, $ssl_server_public)
+  $middleware_ssl_cert_real_content = $ssl_server_public_content
   $middleware_ssl_key_real  = pick_default($middleware_ssl_key, $ssl_server_private)
+  $middleware_ssl_key_real_content = $ssl_server_private_content
 
   $middleware_ssl_key_path  = "${ssldir}/middleware_key.pem"
   $middleware_ssl_cert_path = "${ssldir}/middleware_cert.pem"
