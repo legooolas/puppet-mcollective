@@ -114,6 +114,11 @@ class mcollective (
   $middleware_ssl_key_real  = pick_default($middleware_ssl_key, $ssl_server_private)
   $middleware_ssl_key_real_content = $ssl_server_private_content
 
+  # Validate that both forms of data weren't given
+  if $middleware_ssl_cert_real and $ssl_server_public_content {
+    fail("Both a source and content cannot be defined for mcollective middleware params (ssl_server_public and _content)!")
+  }
+
   $middleware_ssl_key_path  = "${ssldir}/middleware_key.pem"
   $middleware_ssl_cert_path = "${ssldir}/middleware_cert.pem"
   $middleware_ssl_ca_path   = "${ssldir}/middleware_ca.pem"
