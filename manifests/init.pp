@@ -116,7 +116,7 @@ class mcollective (
 
   # Validate that both forms of data weren't given
   if $middleware_ssl_cert_real and $ssl_server_public_content {
-    fail("Both a source and content cannot be defined for mcollective middleware params (ssl_server_public and _content)!")
+    fail("Both a source and content cannot be defined for mcollective middleware params (middleware_ssl_cert_real = ${middleware_ssl_cert_real} and ssl_server_public_content = ${ssl_server_public_content})!")
   }
 
   $middleware_ssl_key_path  = "${ssldir}/middleware_key.pem"
