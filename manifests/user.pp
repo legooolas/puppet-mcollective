@@ -39,7 +39,7 @@ define mcollective::user(
   $_ssl_server_public = pick_default($ssl_server_public, $::mcollective::ssl_server_public)
   $_ssl_server_public_content = pick_default($ssl_server_public_content, $::mcollective::ssl_server_public_content)
   $_ssl_server_private= pick_default($ssl_server_private, $::mcollective::ssl_server_private)
-  $_ssl_server_private_content = pick_default($ssl_server_private_content , $::mcollective::ssl_server_private_content )
+  $_ssl_server_private_content = pick_default($ssl_server_private_content , $::mcollective::ssl_server_private_content)
   $_middleware_hosts  = pick_default($middleware_hosts, $::mcollective::middleware_hosts)
   $_securityprovider  = pick_default($securityprovider, $::mcollective::securityprovider)
   $_connector         = pick_default($connector, $::mcollective::connector)

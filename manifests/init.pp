@@ -114,10 +114,11 @@ class mcollective (
   $middleware_ssl_key_real  = pick_default($middleware_ssl_key, $ssl_server_private)
   $middleware_ssl_key_real_content = $ssl_server_private_content
 
-  # Validate that both forms of data weren't given
-  if $middleware_ssl_cert_real and $ssl_server_public_content {
-    fail("Both a source and content cannot be defined for mcollective middleware params (middleware_ssl_cert_real = ${middleware_ssl_cert_real} and ssl_server_public_content = ${ssl_server_public_content})!")
-  }
+  # TODO : Validate that both forms of data weren't given
+  # NOTE : This check doesn't work, as pick_default produces an empty string, rather than undef, if all given args are undef
+  #if $middleware_ssl_cert_real and $ssl_server_public_content {
+  #  fail("Both a source and content cannot be defined for mcollective middleware params (middleware_ssl_cert_real = ${middleware_ssl_cert_real} and ssl_server_public_content = ${ssl_server_public_content})!")
+  #}
 
   $middleware_ssl_key_path  = "${ssldir}/middleware_key.pem"
   $middleware_ssl_cert_path = "${ssldir}/middleware_cert.pem"

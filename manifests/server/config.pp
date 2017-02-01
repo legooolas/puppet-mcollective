@@ -56,6 +56,7 @@ class mcollective::server::config {
       group  => '0',
       mode   => '0400',
       # Only one of these will be used:
+      # TODO : Fix pick_default usage in main mcollective class to allow this:
       #source => $::mcollective::middleware_ssl_key_real,
       content=> $::mcollective::middleware_ssl_key_real_content,
     }
@@ -65,6 +66,7 @@ class mcollective::server::config {
       group  => '0',
       mode   => '0444',
       # Only one of these will be used:
+      # TODO : Fix pick_default usage in main mcollective class to allow this:
       #source => $::mcollective::middleware_ssl_cert_real,
       content=> $::mcollective::middleware_ssl_cert_real_content,
     }
@@ -76,7 +78,9 @@ class mcollective::server::config {
       owner  => 'root',
       group  => '0',
       mode   => '0444',
-      source => $::mcollective::ssl_server_public,
+      # Only one of these will be used:
+      # TODO : Fix pick_default usage in main mcollective class to allow this:
+      #source => $::mcollective::ssl_server_public,
       content => $::mcollective::ssl_server_public_content,
     }
 
@@ -84,7 +88,9 @@ class mcollective::server::config {
       owner  => 'root',
       group  => '0',
       mode   => '0400',
-      source => $::mcollective::ssl_server_private,
+      # Only one of these will be used:
+      # TODO : Fix pick_default usage in main mcollective class to allow this:
+      #source => $::mcollective::ssl_server_private,
       content => $::mcollective::ssl_server_private_content,
     }
 
