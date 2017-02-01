@@ -119,37 +119,37 @@ define mcollective::user(
 
   if $_securityprovider == 'ssl' or  $_securityprovider == 'sshkey' {
     $private_path = "${homedir_real}/.mcollective.d/credentials/private_keys/${callerid}.pem"
-    if $private_key {
-      file { $private_path:
-        ensure => 'file',
-        source =>  $private_key,
-        owner  =>  $username,
-        group  =>  $group,
-        mode   =>  '0400',
-      }
-    }
-    elsif $private_key_content {
-      file { $private_path:
-        ensure  => 'file',
-        content => $private_key_content,
-        owner   => $username,
-        group   => $group,
-        mode    => '0400',
-      }
-    }
-    # Preserve old behavior
-    elsif $_securityprovider == 'ssl' {
-      file { $private_path:
-        ensure => 'file',
-        # Only one of these two will be used -- whichever is defined:
-        # TODO : Fix pick_default usage in main mcollective class to allow this:
-        #source =>  $_ssl_server_private,
-        content => $_ssl_server_private_content,
-        owner  =>  $username,
-        group  =>  $group,
-        mode   =>  '0400',
-      }
-    }
+    #if $private_key {
+    #  file { $private_path:
+    #    ensure => 'file',
+    #    source =>  $private_key,
+    #    owner  =>  $username,
+    #    group  =>  $group,
+    #    mode   =>  '0400',
+    #  }
+    #}
+    #elsif $private_key_content {
+    #  file { $private_path:
+    #    ensure  => 'file',
+    #    content => $private_key_content,
+    #    owner   => $username,
+    #    group   => $group,
+    #    mode    => '0400',
+    #  }
+    #}
+    ## Preserve old behavior
+    #elsif $_securityprovider == 'ssl' {
+    #  file { $private_path:
+    #    ensure => 'file',
+    #    # Only one of these two will be used -- whichever is defined:
+    #    # TODO : Fix pick_default usage in main mcollective class to allow this:
+    #    #source =>  $_ssl_server_private,
+    #    content => $_ssl_server_private_content,
+    #    owner  =>  $username,
+    #    group  =>  $group,
+    #    mode   =>  '0400',
+    #  }
+    #}
   }
 
   if $_securityprovider == 'ssl' {
